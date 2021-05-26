@@ -5,7 +5,7 @@ const {validationCreateContact, validationUpdateContact} =  require('./validatio
 
 router.get('/', async (req, res, next) => {
   try {
-    const contacts = await Contacts.listContacts()
+    const contacts = await Contacts.getListContacts()
     res.json({ status: 'success', code: 200, data: {contacts}})
   } catch (error) {
     next(error)

@@ -2,14 +2,14 @@ const fs = require('fs/promises')
 const path = require('path')
 const {v4: uuid} = require('uuid')
 
-const pathData = path.join(__dirname, './contacts.json')
+const pathContactsData = path.join(__dirname, './contacts.json')
 
 const readData = async () => {
-  const data = await fs.readFile(pathData, 'utf-8')
+  const data = await fs.readFile(pathContactsData, 'utf-8')
   return JSON.parse(data)
 }
 
-const listContacts = async () => {
+const getListContacts = async () => {
   const data = await readData()
   return data
 }
@@ -25,7 +25,7 @@ const removeContact = async (contactId) => {
   const index = data.findIndex((contact) => contact.id === contactId)
   if (index !== -1) {
     const result = data.splice(index, 1)
-    await fs.writeFile(pathData, JSON.stringify(data))
+    await fs.writeFile(pathContactsData, JSON.stringify(data))
     return result
   }
   return null
@@ -42,7 +42,7 @@ const addContact = async ({name, email, phone}) => {
     }
     const data = await readData()
     data.push(record)
-    await fs.writeFile(pathData, JSON.stringify(data))
+    await fs.writeFile(pathContactsData, JSON.stringify(data))
     return record
   }
   return null
@@ -53,13 +53,13 @@ const updateContact = async (contactId, body) => {
   const result = data.find((contact) => contact.id === contactId)
   if (result) {
     Object.assign(result, body)
-    await fs.readFile(pathData, 'utf-8')
+    await fs.writeFile(pathContactsData, JSON.stringify(data))
   }
   return result
 }
 
 module.exports = {
-  listContacts,
+  getListContacts,
   getContactById,
   removeContact,
   addContact,
