@@ -1,9 +1,10 @@
 const { Schema, model } = require('mongoose');
-const {Status} = require('../helpers/constants')
-const bcrypt = require('bcryptjs')
-const SALT_WORK_FACTOR = 8
+const { Status } = require('../helpers/constants');
+const bcrypt = require('bcryptjs');
+const SALT_WORK_FACTOR = 8;
 
-const userSchema = new Schema( {
+const userSchema = new Schema(
+  {
     password: {
       type: String,
       required: [true, 'Password is required'],
@@ -16,35 +17,39 @@ const userSchema = new Schema( {
     subscription: {
       type: String,
       enum: [Status.STARTER, Status.PRO, Status.BUSINESS],
-      default: Status.STARTER
+      default: Status.STARTER,
     },
     token: {
       type: String,
       default: null,
     },
-  }, 
+  },
   {
     versionKey: false,
     timestamps: true,
-    toJSON: {virtuals: true, transform: function(doc, ret) {
-        delete ret._id
-        return ret
-    }},
-    toObject: {virtuals: true}
-});
+    toJSON: {
+      virtuals: true,
+      transform: function (doc, ret) {
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: { virtuals: true },
+  },
+);
 
 userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
-    const salt = await bcrypt.genSalt(SALT_WORK_FACTOR)
-    this.password = await bcrypt.hash(this.password, salt)
+    const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
+    this.password = await bcrypt.hash(this.password, salt);
   }
-  next()
-})
+  next();
+});
 
 userSchema.methods.isValidPassword = async function (password) {
-  return await bcrypt.compare(password, this.password)
-}
+  return await bcrypt.compare(password, this.password);
+};
 
-  const User = model('user', userSchema)
+const User = model('user', userSchema);
 
-  module.exports = User
+module.exports = User;
